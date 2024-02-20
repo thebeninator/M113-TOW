@@ -108,7 +108,7 @@ namespace M113Tow
                 main_gun.FCS.Awake();
                 main_gun.FCS.Mounts[0] = vic.transform.Find("Turret ring scripts").GetComponent<AimablePlatform>();
                 main_gun.FCS.Mounts[1].Transform = tow.transform.Find("BGM71/AZIMUTH/ELEVATION");
-                main_gun.Weapon.Feed._totalReloadTime = 13f;
+                main_gun.Weapon.Feed._totalReloadTime = 12f;
 
                 vic.AimablePlatforms = main_gun.FCS.Mounts;
 
