@@ -30,6 +30,7 @@ namespace M113Tow
         GameObject[] vic_gos;
         MelonPreferences_Entry<int> random_chance;
         MelonPreferences_Entry<bool> thermals;
+        MelonPreferences_Entry<bool> stab;
 
         public override void OnInitializeMelon()
         {
@@ -38,6 +39,7 @@ namespace M113Tow
             random_chance.Comment = "Integer (default: 40)";
             thermals = cfg.CreateEntry<bool>("Has Thermals", false);
             thermals.Comment = "the thermal sight blocks a ton of frontal vision in commander view lol";
+            stab = cfg.CreateEntry<bool>("Has Stabilizer", false);
         }
 
         public IEnumerator GetVics(GameState _)
@@ -68,12 +70,12 @@ namespace M113Tow
                 Transform turret_ring = vic.transform.Find("M113A2_rig/HULL/Turret ring");
                 turret_ring.GetChild(0).gameObject.SetActive(false);
                 turret_ring.GetChild(2).gameObject.SetActive(false);
+                turret_ring.GetChild(3).localPosition = new Vector3(-0.0055f, 0.7446f, 0.115f);
 
                 GameObject tow = GameObject.Instantiate(m220, turret_ring);
                 tow.SetActive(true);
 
                 // 0.3672 -0.7227 0.711
-
                 //tow.transform.localPosition = new Vector3(0.3672f, -0.6927f, 0.711f);
                 tow.transform.localPosition = new Vector3(0.3272f, -0.7127f, 0.641f);
 
@@ -90,6 +92,7 @@ namespace M113Tow
                 main_gun.PreAimWeapon = WeaponSystemRole.MountedLauncher;
                 main_gun.Name = "M220 TOW launcher";
                 main_gun.Weapon = tow_weapon;
+                main_gun.Weapon._impulseLocation = vic.transform;
 
                 main_gun.FCS = tow_weapon.FCS;
                 main_gun.FCS.MainOptic = elev_scripts.Find("day sight/GPS").GetComponent<UsableOptic>();
@@ -108,7 +111,22 @@ namespace M113Tow
                 main_gun.FCS.Awake();
                 main_gun.FCS.Mounts[0] = vic.transform.Find("Turret ring scripts").GetComponent<AimablePlatform>();
                 main_gun.FCS.Mounts[1].Transform = tow.transform.Find("BGM71/AZIMUTH/ELEVATION");
+                main_gun.FCS.Mounts[1].LocalEulerLimits.x = -10;
                 main_gun.Weapon.Feed._totalReloadTime = 12f;
+                for (int i = 0; i <= 3; i++)
+                    main_gun.Weapon.Feed.ReadyRack.AddInvisibleClip(main_gun.Weapon.Feed.ReadyRack.ClipTypes[0]);
+
+                if (stab.Value)
+                {
+                    main_gun.FCS.CurrentStabMode = StabilizationMode.Vector;
+                    main_gun.FCS.StabsActive = true;
+                    for (int i = 0; i <= 1; i++)
+                    {
+                        main_gun.FCS.Mounts[i].Stabilized = true;
+                        main_gun.FCS.Mounts[i]._stabActive = true;
+                        main_gun.FCS.Mounts[i]._stabMode = StabilizationMode.Vector;
+                    }
+                }
 
                 vic.AimablePlatforms = main_gun.FCS.Mounts;
 
