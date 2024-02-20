@@ -4,5 +4,5 @@
 Arms M113s with the M220 launcher system and 10 BGM-71A TOW missiles.
 - Longer reload time than TOW emplacements
 - Launcher is not stabilized by default
-- M113s have a 40% chance of being armed with TOW missiles by default
-- M113 TOWs are not equipped with the thermal sight by default 
+- Launcher is not equipped with the thermal sight by default
+- 40% chance of appearing by default
