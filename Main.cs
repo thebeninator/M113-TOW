@@ -17,8 +17,9 @@ using GHPC.Weapons;
 using GHPC.Equipment.Optics;
 using GHPC;
 using GHPC.Crew;
+using GHPC.Effects;
 
-[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.0", "ATLAS")]
+[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.1", "ATLAS")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
 namespace M113Tow
@@ -138,6 +139,34 @@ namespace M113Tow
                 elev_armor_late_follow.transform.Find("TOOOOOOOOOB").GetComponent<UniformArmor>().Unit = vic;
 
                 vic.InfoBroker.AI.firingSpeedLimit = 1f;
+
+                LateFollowTarget hull_late_follow = vic.GetComponent<LateFollowTarget>();
+                GameObject ammo_box = hull_late_follow._lateFollowers[0].transform.Find("HULL AAR").Find("spare ammo").gameObject;
+                ammo_box.GetComponent<UniformArmor>()._name = "spare TOW missiles";
+                ammo_box.transform.localScale = new Vector3(0.2227f, 0.5722f, 1.0287f);
+                ammo_box.GetComponent<FlammableItem>()._explosive = true;
+                ammo_box.GetComponent<FlammableItem>()._tntEquivalent = 10f;
+
+                FlammablesCluster flam = ammo_box.GetComponent<FlammableItem>()._cluster;
+                flam.ContainsExplosives = true;
+
+                GameObject second_ammo_box = GameObject.Instantiate(ammo_box, hull_late_follow._lateFollowers[0].transform.Find("HULL AAR"));
+                second_ammo_box.transform.localPosition = new Vector3(1.01f, 1.117f, 0.297f);
+                second_ammo_box.GetComponent<FlammableItem>().RegisterCluster(flam);
+
+                GameObject third_ammo_box = GameObject.Instantiate(ammo_box, hull_late_follow._lateFollowers[0].transform.Find("HULL AAR"));
+                third_ammo_box.transform.localPosition = new Vector3(-0.0299f, 0.6075f, -0.7725f);
+                third_ammo_box.transform.localEulerAngles = new Vector3(0f, 0f, 90f);
+                third_ammo_box.GetComponent<FlammableItem>().RegisterCluster(flam);
+
+                GameObject fourth_ammo_box = GameObject.Instantiate(ammo_box, hull_late_follow._lateFollowers[0].transform.Find("HULL AAR"));
+                fourth_ammo_box.transform.localPosition = new Vector3(-0.0299f, 0.8275f, -0.7725f);
+                fourth_ammo_box.transform.localEulerAngles = new Vector3(0f, 0f, 90f);
+                fourth_ammo_box.GetComponent<FlammableItem>().RegisterCluster(flam);
+
+                flam.Items.Add(second_ammo_box.GetComponent<FlammableItem>());
+                flam.Items.Add(third_ammo_box.GetComponent<FlammableItem>());
+                flam.Items.Add(fourth_ammo_box.GetComponent<FlammableItem>());
 
                 vic._friendlyName = "M113 TOW";
             }
