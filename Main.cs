@@ -9,7 +9,6 @@ using GHPC.Camera;
 using GHPC.Player;
 using GHPC.State;
 using GHPC.Vehicle;
-using M113Tow;
 using MelonLoader;
 using GHPC.Utility;
 using UnityEngine;
@@ -18,29 +17,24 @@ using GHPC.Equipment.Optics;
 using GHPC;
 using GHPC.Crew;
 using GHPC.Effects;
+using M113Extended;
 
-[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.2", "ATLAS")]
+[assembly: MelonInfo(typeof(M113ExtendedMod), "M113 Extended", "1.1.2", "ATLAS")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
-namespace M113Tow
+namespace M113Extended
 {
-    public class M113TowMod : MelonMod
+    public class M113ExtendedMod : MelonMod
     {
         static GameObject m220;
         static GameObject elevation_armor;
         static GameObject[] vic_gos;
-        MelonPreferences_Entry<int> random_chance;
-        MelonPreferences_Entry<bool> thermals;
-        MelonPreferences_Entry<bool> stab;
 
         public override void OnInitializeMelon()
         {
-            MelonPreferences_Category cfg = MelonPreferences.CreateCategory("M113TOW");
-            random_chance = cfg.CreateEntry<int>("Conversion Chance", 40);
-            random_chance.Comment = "Integer (default: 40)";
-            thermals = cfg.CreateEntry<bool>("Has Thermals", false);
-            thermals.Comment = "the thermal sight blocks a ton of frontal vision in commander view lol";
-            stab = cfg.CreateEntry<bool>("Has Stabilizer", false);
+            MelonPreferences_Category cfg = MelonPreferences.CreateCategory("M113Extended");
+            TOW.Config(cfg);       
+     
         }
 
         public IEnumerator GetVics(GameState _)
@@ -174,7 +168,7 @@ namespace M113Tow
 
         public override void OnSceneWasLoaded(int idx, string scene_name)
         {
-            if (scene_name == "MainMenu2_Scene" || scene_name == "LOADER_MENU" || scene_name == "LOADER_INITIAL" || scene_name == "t64_menu") return;
+            if (Util.menu_screens.Contains(scene_name)) return;
 
             foreach (Vehicle s in Resources.FindObjectsOfTypeAll(typeof(Vehicle)))
             {
