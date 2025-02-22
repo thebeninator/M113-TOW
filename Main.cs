@@ -9,7 +9,6 @@ using GHPC.Camera;
 using GHPC.Player;
 using GHPC.State;
 using GHPC.Vehicle;
-using M113Tow;
 using MelonLoader;
 using GHPC.Utility;
 using UnityEngine;
@@ -23,9 +22,9 @@ using System.Data.SqlTypes;
 [assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.3", "ATLAS")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
-namespace M113Tow
+namespace M113Extended
 {
-    public class M113TowMod : MelonMod
+    public class M113ExtendedMod : MelonMod
     {
         static GameObject m220;
         static GameObject elevation_armor;
