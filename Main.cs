@@ -18,8 +18,9 @@ using GHPC.Equipment.Optics;
 using GHPC;
 using GHPC.Crew;
 using GHPC.Effects;
+using System.Data.SqlTypes;
 
-[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.2", "ATLAS")]
+[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.3", "ATLAS")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
 namespace M113Tow
@@ -29,9 +30,11 @@ namespace M113Tow
         static GameObject m220;
         static GameObject elevation_armor;
         static GameObject[] vic_gos;
+        static AmmoClipCodexScriptable i_tow_clip_codex;
         MelonPreferences_Entry<int> random_chance;
         MelonPreferences_Entry<bool> thermals;
         MelonPreferences_Entry<bool> stab;
+        MelonPreferences_Entry<bool> use_i_tow; 
 
         public override void OnInitializeMelon()
         {
@@ -41,6 +44,7 @@ namespace M113Tow
             thermals = cfg.CreateEntry<bool>("Has Thermals", false);
             thermals.Comment = "the thermal sight blocks a ton of frontal vision in commander view lol";
             stab = cfg.CreateEntry<bool>("Has Stabilizer", false);
+            use_i_tow = cfg.CreateEntry<bool>("Use BGM-71C I-TOW", false);
         }
 
         public IEnumerator GetVics(GameState _)
@@ -57,7 +61,8 @@ namespace M113Tow
                 Vehicle vic = vic_go.GetComponent<Vehicle>();
 
                 if (vic == null) continue;
-                if (vic.FriendlyName != "M113") continue;
+                if (vic.UniqueName != "M113") continue;
+                if (vic_go.GetComponent<Util.AlreadyConverted>() != null) continue;
 
                 WeaponSystemInfo main_gun = vic.WeaponsManager.Weapons[0];
 
@@ -111,8 +116,25 @@ namespace M113Tow
                 main_gun.FCS.Mounts[1].Transform = tow.transform.Find("BGM71/AZIMUTH/ELEVATION");
                 main_gun.FCS.Mounts[1].LocalEulerLimits.x = -10;
                 main_gun.Weapon.Feed._totalReloadTime = 12f;
+
+                GHPC.Weapons.AmmoRack rack = main_gun.Weapon.Feed.ReadyRack;
+                if (use_i_tow.Value)
+                    rack.ClipTypes = new AmmoType.AmmoClip[] { i_tow_clip_codex.ClipType };
                 for (int i = 0; i <= 3; i++)
                     main_gun.Weapon.Feed.ReadyRack.AddInvisibleClip(main_gun.Weapon.Feed.ReadyRack.ClipTypes[0]);
+
+                if (use_i_tow.Value)
+                {
+                    List<AmmoType.AmmoClip> new_stored_clips = new List<AmmoType.AmmoClip>();
+                    for (int i = 0; i < rack.StoredClips.Count; i++)
+                    {
+                        new_stored_clips.Add(i_tow_clip_codex.ClipType);
+                    }
+
+                    rack.StoredClips = new_stored_clips.ToList();
+                    main_gun.Weapon.Feed.AmmoTypeInBreech = null;
+                    main_gun.Weapon.Feed.LoadedClipType = null;
+                }
 
                 if (stab.Value)
                 {
@@ -166,7 +188,8 @@ namespace M113Tow
                 flam.Items.Add(third_ammo_box.GetComponent<FlammableItem>());
                 flam.Items.Add(fourth_ammo_box.GetComponent<FlammableItem>());
 
-                vic._friendlyName = "M113 TOW";
+                vic._friendlyName = "M113A2 TOW";
+                vic_go.AddComponent<Util.AlreadyConverted>();
             }
 
             yield break;
@@ -174,12 +197,17 @@ namespace M113Tow
 
         public override void OnSceneWasLoaded(int idx, string scene_name)
         {
-            if (scene_name == "MainMenu2_Scene" || scene_name == "LOADER_MENU" || scene_name == "LOADER_INITIAL" || scene_name == "t64_menu") return;
+            if (Util.menu_screens.Contains(scene_name)) return;
 
             foreach (Vehicle s in Resources.FindObjectsOfTypeAll(typeof(Vehicle)))
             {
                 if (m220 != null) break;
-                if (s.UniqueName != "STATIC_TOW") continue;
+                if (s.gameObject.name != "TOW") continue;
+
+                foreach (AmmoClipCodexScriptable a in Resources.FindObjectsOfTypeAll(typeof(AmmoClipCodexScriptable)))
+                {
+                    if (a.name == "clip_I-TOW") i_tow_clip_codex = a;
+                }
 
                 m220 = GameObject.Instantiate(s.gameObject.transform.Find("BGM71_rig").gameObject);
                 GameObject azimuth_scripts = GameObject.Instantiate(s.gameObject.transform.Find("Azimuth Scripts").gameObject);

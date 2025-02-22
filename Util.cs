@@ -1,20 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using GHPC.Weapons;
 using GHPC.Equipment.Optics;
+using GHPC.Weapons;
+using Thermals;
 using UnityEngine;
 
 namespace M113Tow
 {
     public class Util
     {
-        public class AlreadyConverted : MonoBehaviour { }
+        public class AlreadyConverted : MonoBehaviour
+        {
 
-        // https://snipplr.com/view/75285/clone-from-one-object-to-another-using-reflection
+        }
+
+        public static string[] menu_screens = new string[] {
+            "MainMenu2_Scene",
+            "MainMenu2-1_Scene",
+            "LOADER_MENU",
+            "LOADER_INITIAL",
+            "t64_menu"
+        };
+
+        public static T[] AppendToArray<T>(T[] array, T new_item)
+        {
+            List<T> values = new List<T>();
+            foreach (T old_item in array)
+            {
+                values.Add(old_item);
+            }
+
+            values.Add(new_item);
+
+            return values.ToArray();
+        }
+
+        public static void SetupFLIRShaders(GameObject parent)
+        {
+            foreach (MeshRenderer mrend in parent.GetComponentsInChildren<MeshRenderer>(includeInactive: false))
+            {
+                foreach (Material mat in mrend.materials)
+                {
+                    mat.shader = Shader.Find("Standard (FLIR)");
+                }
+            }
+
+            HeatSource src = parent.AddComponent<HeatSource>();
+            src.FetchSwapableMats();
+        }
+
         public static void ShallowCopy(System.Object dest, System.Object src)
         {
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
@@ -43,8 +78,8 @@ namespace M113Tow
             {
                 return fcs.MainOptic;
             }
-
         }
+
         public static void EmptyRack(GHPC.Weapons.AmmoRack rack)
         {
             MethodInfo removeVis = typeof(GHPC.Weapons.AmmoRack).GetMethod("RemoveAmmoVisualFromSlot", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -66,3 +101,4 @@ namespace M113Tow
         }
     }
 }
+
