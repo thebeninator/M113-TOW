@@ -6,7 +6,7 @@ using GHPC.Weapons;
 using Thermals;
 using UnityEngine;
 
-namespace M113Extended
+namespace M113Tow
 {
     public class Util
     {

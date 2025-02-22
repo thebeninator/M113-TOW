@@ -18,13 +18,14 @@ using GHPC;
 using GHPC.Crew;
 using GHPC.Effects;
 using System.Data.SqlTypes;
+using M113Tow;
 
 [assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.3", "ATLAS")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
-namespace M113Extended
+namespace M113Tow
 {
-    public class M113ExtendedMod : MelonMod
+    public class M113TowMod : MelonMod
     {
         static GameObject m220;
         static GameObject elevation_armor;
