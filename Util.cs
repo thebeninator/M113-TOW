@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using GHPC.Equipment.Optics;
 using GHPC.Weapons;
-using Thermals;
+using GHPC.Thermals;
 using UnityEngine;
 
 namespace M113Tow
@@ -47,7 +47,7 @@ namespace M113Tow
             }
 
             HeatSource src = parent.AddComponent<HeatSource>();
-            src.FetchSwapableMats();
+            src.heat = 5f;
         }
 
         public static void ShallowCopy(System.Object dest, System.Object src)

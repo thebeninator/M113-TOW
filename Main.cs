@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GHPC.AI;
-using GHPC.Camera;
-using GHPC.Player;
 using GHPC.State;
 using GHPC.Vehicle;
 using MelonLoader;
@@ -17,10 +11,9 @@ using GHPC.Equipment.Optics;
 using GHPC;
 using GHPC.Crew;
 using GHPC.Effects;
-using System.Data.SqlTypes;
 using M113Tow;
 
-[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.3", "ATLAS")]
+[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.4", "ATLAS")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
 namespace M113Tow
