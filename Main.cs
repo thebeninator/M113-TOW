@@ -15,7 +15,7 @@ using M113Tow;
 using GHPC.Camera;
 using GHPC.Player;
 
-[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.4A", "ATLAS")]
+[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.4B", "ATLAS")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
 namespace M113Tow
@@ -185,11 +185,16 @@ namespace M113Tow
 
                 vic._friendlyName = "M113A2 TOW";
 
-                vic._designatedCameraSlots = new GHPC.Camera.CameraSlot[] {
+                List<CameraSlot> cam_slots = new List<CameraSlot> {
                     vic.transform.Find("M113A2_rig/HULL/Turret ring/commander head").GetComponent<CameraSlot>(),
                     main_gun.FCS.MainOptic.slot,
-                    main_gun.FCS.MainOptic.slot.LinkedNightSight,
                 };
+
+                if (thermals.Value) {
+                    cam_slots.Add(main_gun.FCS.MainOptic.slot.LinkedNightSight);
+                }
+
+                vic._designatedCameraSlots = cam_slots.ToArray();
 
                 if (vic.GetInstanceID() == PlayerInput.Instance.CurrentPlayerUnit.GetComponent<Vehicle>().GetInstanceID())
                 {
