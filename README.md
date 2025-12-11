@@ -1,3 +1,6 @@
+THIS MOD REQUIRES THE VEHICLE PRELOADER!!!!!!!!
+https://github.com/thebeninator/VehiclePreloader/releases/latest
+
 # M113 TOW
 ![image](https://github.com/thebeninator/M113-TOW/assets/89621837/02138945-7ce8-42f2-b33b-641d26761442)
 
