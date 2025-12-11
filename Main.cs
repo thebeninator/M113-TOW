@@ -14,8 +14,9 @@ using GHPC.Effects;
 using M113Tow;
 using GHPC.Camera;
 using GHPC.Player;
+using GHPC.Weaponry;
 
-[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.4B", "ATLAS")]
+[assembly: MelonInfo(typeof(M113TowMod), "M113 TOW", "1.0.4C", "ATLAS")]
 [assembly: MelonGame("Radian Simulations LLC", "GHPC")]
 
 namespace M113Tow
