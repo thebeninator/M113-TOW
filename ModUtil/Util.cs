@@ -1,19 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using GHPC;
 using GHPC.Equipment.Optics;
 using GHPC.Weapons;
 using GHPC.Thermals;
 using UnityEngine;
+using GHPC.Effects;
 
-namespace M113Tow
+namespace ModUtil
 {
-    public class Util
+    public sealed class AlreadyConverted : MonoBehaviour
     {
-        public class AlreadyConverted : MonoBehaviour
+        void Awake() 
         {
-
+            enabled = false;
         }
+    }
+
+    public sealed class Util
+    {
+        public static ImpactEffectsDatabaseScriptable impact_fx_db;
 
         public static string[] menu_screens = new string[] {
             "MainMenu2_Scene",
@@ -22,6 +29,58 @@ namespace M113Tow
             "LOADER_INITIAL",
             "t64_menu"
         };
+
+        public static void Reposition(Transform target, Transform to, bool delete_to = false, bool sendback = false)
+        {
+            Transform original_parent_transform = target.parent;
+            target.SetParent(to);
+            target.localPosition = Vector3.zero;
+            target.SetParent(sendback ? original_parent_transform : to.parent);
+
+            if (delete_to)
+            {
+                GameObject.Destroy(to.gameObject);
+            }
+        }
+
+        public static void Reposition(Transform[] targets, Transform to, bool delete_to = false, bool sendback = false)
+        {
+            foreach (Transform target in targets)
+            {
+                Reposition(target, to);
+            }
+
+            if (delete_to)
+            {
+                GameObject.Destroy(to.gameObject);
+            }
+        }
+
+        public static void CacheAmmo(AmmoType ammo)
+        {
+            if (impact_fx_db == null)
+            {
+                impact_fx_db = Resources.FindObjectsOfTypeAll<ImpactEffectsDatabaseScriptable>()[0];
+            }
+
+            int id;
+            ImpactDecalsManager.Instance._ImpactDecalsScriptable.CacheNewData(ammo, out id);
+            impact_fx_db.CacheNewData(ammo, out id);
+            ammo.CachedIndex = id;
+        }
+
+        public static void CreateUniformArmour(GameObject go, string name, float rha_sabot, float rha_heat, ArmorCodexScriptable codex = null) {
+            UniformArmor component = go.AddComponent<UniformArmor>();
+            go.tag = "Penetrable";
+            go.layer = 8;
+            component.SetName(name);
+            component.PrimaryHeatRha = rha_heat;
+            component.PrimarySabotRha = rha_sabot;
+
+            if (codex != null) {
+                component._armorType = codex;
+            }
+        }
 
         public static T[] AppendToArray<T>(T[] array, T new_item)
         {
@@ -36,9 +95,15 @@ namespace M113Tow
             return values.ToArray();
         }
 
+        public static void Coalesce<T>(ref T obj) where T : new()
+        {
+            if (obj != null) return;
+            obj = new T();
+        }
+
         public static void SetupFLIRShaders(GameObject parent)
         {
-            foreach (MeshRenderer mrend in parent.GetComponentsInChildren<MeshRenderer>(includeInactive: false))
+            foreach (MeshRenderer mrend in parent.GetComponentsInChildren<MeshRenderer>())
             {
                 foreach (Material mat in mrend.materials)
                 {
@@ -47,7 +112,7 @@ namespace M113Tow
             }
 
             HeatSource src = parent.AddComponent<HeatSource>();
-            src.heat = 5f;
+            src.heat = 0.4f;
         }
 
         public static void ShallowCopy(System.Object dest, System.Object src)
@@ -101,4 +166,3 @@ namespace M113Tow
         }
     }
 }
-
